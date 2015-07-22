@@ -11,7 +11,6 @@ local url_public  = "https://public-api.mexbt.com"
 -- @field currency_pair global currency pair. Default: "btcmxn"
 local M = {
   currency_pair = "btcmxn",
-  decode_json = true
 }
 
 local function call_public(method, params)
@@ -35,6 +34,8 @@ local function call_public(method, params)
     sink = ltn12.sink.table(content)
   }
   if not success then error(errormsg) end
+  -- if empty response --
+  if next(content) == nil then return nil end
   
   return cjson.decode(table.concat(content))
 end

@@ -57,7 +57,7 @@ local function call_private(account, method, params)
   
   if not success then error(errormsg) end
   -- if empty response --
-  if next(content) then return nil end
+  if next(content) == nil then return nil end
   
   return cjson.decode(table.concat(content))
 end
@@ -109,27 +109,27 @@ end
 --   price = 342.99                 -- not used with market type
 -- }
 -- @param amount quantity to purchase or sell (or named parameters)
--- @param side "buy" or "sell"
--- @param type "market" or "limit"
+-- @param side "buy" or "sell". Default: "buy"
+-- @param type "market" or "limit". Default: "market"
 -- @param price price for transaction (market type don't use it)
 -- @param currency_pair currency pair string. Default: local or global currency pair
 -- @return json response in table form
-function M:create_order(amount, side, type, price, currency_pair)
+function M:create_order(amount, side, _type, price, currency_pair)
   local params
   if type(amount) == "table" then
     params = {
       ins = amount.currency_pair or self.currency_pair or mexbt.currency_pair,
       qty = format_amount(self, amount.amount),
-      orderType = amount.type,
-      side = amount.side,
+      orderType = amount.type or "market",
+      side = amount.side or "buy",
       px = amount.price,
     }
   else
     params = {
       ins = currency_pair or self.currency_pair or mexbt.currency_pair,
       qty = format_amount(self, amount),
-      orderType = type,
-      side = side,
+      orderType = _type or "market",
+      side = side or "buy",
       px = price,
     }
   end
@@ -137,7 +137,7 @@ function M:create_order(amount, side, type, price, currency_pair)
   if params.orderType == "market" then params.orderType = 1
   elseif params.orderType == "limit" then params.orderType = 0
   elseif params.orderType == 1 or params.orderType == 0 then --do nothing
-  else error("Unknown order type '"..params.type.."'") end
+  else error("Unknown order type '"..tostring(params.type).."'") end
   
   return call_private(self, "orders/create", params)
 end
