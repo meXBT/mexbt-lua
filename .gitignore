@@ -1,4 +1,6 @@
 .buildpath
 .project
 .settings
+mexbt/
+*.so
 *.rock
