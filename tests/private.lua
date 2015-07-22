@@ -6,8 +6,8 @@ describe("meXBT Private", function()
   local account = mexbt.account.new(
     "xxx", -- Public Key
     "xxx", -- Private Key
-    "xxx",  -- User Id
-    true  -- sandbox
+    "xxx", -- User Id
+    true   -- sandbox
   )
   
   it("gives a valid response to all public api functions that require no args", function()
